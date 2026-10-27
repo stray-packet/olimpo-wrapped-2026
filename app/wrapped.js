@@ -5,8 +5,116 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const bannerSection = document.createElement('section');
 bannerSection.className = 'wrapped-banner-section';
 bannerSection.setAttribute('aria-label', 'Tu Olimpo Wrapped 2026');
-bannerSection.innerHTML = `<button class="wrapped-banner" data-open-wrapped><img src="${coverArt}" class="wrapped-banner-art" alt="" fetchpriority="high"><span class="wrapped-banner-edition">2026</span><div class="wrapped-banner-copy"><span class="wrapped-banner-eyebrow">OLIMPO WRAPPED · YA ESTÁ AQUÍ</span><h2>Todo un año.<br><em>Una historia tuya.</em></h2><p class="wrapped-banner-description">Revive los momentos que marcaron tu 2026.</p><span class="wrapped-banner-cta">Ver mi Wrapped</span></div></button>`;
-document.querySelector('.quick-nav').after(bannerSection);
+bannerSection.innerHTML = `<button class="wrapped-banner" data-open-wrapped>
+  <span class="wrapped-mobile" data-node-id="10903:2428">
+    <span class="wrapped-mobile-surface">
+      <span class="wrapped-mobile-flags-top" data-node-id="10903:2429"><span><img src="assets/wrapped/banner/checkered-flags.png" alt=""><span></span></span></span>
+      <span class="wrapped-mobile-flags-bottom" data-node-id="10903:2431"><img src="assets/wrapped/banner/checkered-flags.png" alt=""><span></span></span>
+      <span class="wrapped-mobile-lights" aria-hidden="true"></span>
+      <span class="wrapped-mobile-copy" data-node-id="10903:2432"><span class="wrapped-mobile-heading" data-node-id="10903:2434"><span>OLIMPO</span><span>WRAPPED</span></span><span class="wrapped-mobile-description" data-node-id="10903:2437">Un recorrido por tus mejores momentos.</span><span class="wrapped-mobile-cta-wrap"><span class="wrapped-mobile-cta" data-node-id="10903:2439">Ver mi resumen</span></span></span>
+      <span class="wrapped-mobile-year" aria-label="2026"><span class="wrapped-mobile-year-top" data-node-id="10903:2441"><span>2</span><span>0</span></span><span class="wrapped-mobile-year-bottom" data-node-id="10903:2442"><span>2</span><span>6</span></span></span>
+    </span>
+    <span class="wrapped-mobile-lightning" data-node-id="10903:2430"><img src="assets/wrapped/banner/gold-lightning.png" alt=""></span>
+  </span>
+  <span class="wrapped-web" data-node-id="10892:2039">
+    <span class="wrapped-web-surface" data-node-id="10892:2017">
+      <span class="wrapped-web-flags wrapped-web-flags-right" data-node-id="10892:2018"><img src="assets/wrapped/banner/checkered-flags.png" alt=""><span></span></span>
+      <span class="wrapped-web-year" aria-label="2026"><span class="wrapped-web-year-top" data-node-id="10892:2020"><span>2</span><span>0</span></span><span class="wrapped-web-year-bottom" data-node-id="10892:2021"><span>2</span><span>6</span></span></span>
+      <span class="wrapped-web-flags wrapped-web-flags-left" data-node-id="10895:2062"><img src="assets/wrapped/banner/checkered-flags.png" alt=""><span></span></span>
+      <span class="wrapped-web-lights" aria-hidden="true"></span>
+      <span class="wrapped-web-copy" data-node-id="10892:2022"><span class="wrapped-web-heading" data-node-id="10892:2024"><span>OLIMPO</span><span>WRAPPED</span></span><span class="wrapped-web-description" data-node-id="10892:2027">Un recorrido por tus mejores momentos.</span><span class="wrapped-web-cta-wrap"><span class="wrapped-web-cta" data-node-id="10892:2029">Ver mi resumen</span></span></span>
+    </span>
+    <span class="wrapped-web-lightning" data-node-id="10895:2059"><img src="assets/wrapped/banner/gold-lightning.png" alt=""></span>
+  </span>
+</button>`;
+const announcement = document.createElement('dialog');
+announcement.className = 'wrapped-announcement';
+announcement.setAttribute('aria-label', 'Descubre tu Olimpo Wrapped 2026');
+announcement.innerHTML = `<button class="wrapped-announcement-close" type="button" aria-label="Cerrar anuncio de Olimpo Wrapped"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M7.99935 8.00033L4.66602 4.66699M7.99935 8.00033L11.3327 11.3337M7.99935 8.00033L11.3327 4.66699M7.99935 8.00033L4.66602 11.3337" stroke-width="2.02941" stroke-linecap="round" stroke-linejoin="round" stroke="white"/></svg></button>`;
+announcement.append(bannerSection);
+document.body.append(announcement);
+const floatingWrapped = document.createElement('button');
+floatingWrapped.className = 'wrapped-floating';
+floatingWrapped.type = 'button';
+floatingWrapped.hidden = true;
+floatingWrapped.setAttribute('aria-label', 'Abrir mi Olimpo Wrapped');
+floatingWrapped.setAttribute('title', 'Tu Olimpo Wrapped');
+floatingWrapped.innerHTML = `<span class="wrapped-floating-face" aria-hidden="true"><img src="assets/wrapped/banner/gold-lightning.png" alt=""><span class="wrapped-floating-o">O</span><span class="wrapped-floating-w">W</span></span>`;
+document.body.append(floatingWrapped);
+let announcementTimer;
+let announcementPreviousFocus;
+let announcementBodyOverflow = '';
+let announcementClosing = false;
+let floatingUnlocked = false;
+
+function revealFloatingWrapped(animate = true) {
+  if (!floatingUnlocked) return;
+  floatingWrapped.hidden = false;
+  if (animate && !reducedMotion.matches) floatingWrapped.animate([
+    { opacity: 0, transform: 'scale(.6)' },
+    { offset: .75, opacity: 1, transform: 'scale(1.08)' },
+    { opacity: 1, transform: 'scale(1)' }
+  ], { duration: 480, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
+}
+
+function showAnnouncement() {
+  if (announcement.open) return;
+  announcementPreviousFocus = document.activeElement;
+  announcementBodyOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+  announcement.showModal();
+  // The close control is a sibling, so the entire banner remains one click target.
+  announcement.querySelector('.wrapped-announcement-close').focus({ preventScroll: true });
+  announcementTimer = setTimeout(() => dismissAnnouncement(), 10000);
+}
+
+async function dismissAnnouncement(restoreFocus = true, morph = true) {
+  if (!announcement.open || announcementClosing) return;
+  announcementClosing = true;
+  clearTimeout(announcementTimer);
+  floatingUnlocked = true;
+  if (morph) {
+    revealFloatingWrapped(false);
+    if (!reducedMotion.matches) {
+      const origin = announcement.getBoundingClientRect();
+      const target = floatingWrapped.getBoundingClientRect();
+      const dx = target.x + target.width / 2 - origin.x - origin.width / 2;
+      const dy = target.y + target.height / 2 - origin.y - origin.height / 2;
+      announcement.dataset.dismissing = 'true';
+      const flight = announcement.animate([
+        { transform: 'translate(0,0) scale(1,1)', opacity: 1, clipPath: 'inset(-80px -40px round 16px)' },
+        { offset: .7, transform: `translate(${dx * .86}px,${dy * .86}px) scale(.22,.22)`, opacity: .8, clipPath: 'inset(0 round 40%)' },
+        { transform: `translate(${dx}px,${dy}px) scale(${target.width / origin.width},${target.height / origin.height})`, opacity: 0, clipPath: 'inset(0 round 50%)' }
+      ], { duration: 680, easing: 'cubic-bezier(.65,0,.25,1)', fill: 'forwards' });
+      floatingWrapped.animate([
+        { opacity: 0, transform: 'scale(.5)' },
+        { offset: .8, opacity: 1, transform: 'scale(1.1)' },
+        { opacity: 1, transform: 'scale(1)' }
+      ], { duration: 420, delay: 380, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
+      await flight.finished.catch(() => {});
+      flight.cancel();
+    }
+  }
+  announcement.close();
+  delete announcement.dataset.dismissing;
+  announcementClosing = false;
+  document.body.style.overflow = announcementBodyOverflow;
+  if (restoreFocus) {
+    const focusTarget = announcementPreviousFocus instanceof HTMLElement && announcementPreviousFocus !== document.body ? announcementPreviousFocus : floatingWrapped;
+    focusTarget.focus({ preventScroll: true });
+  }
+}
+
+announcement.querySelector('.wrapped-announcement-close').addEventListener('click', () => dismissAnnouncement());
+announcement.addEventListener('cancel', event => { event.preventDefault(); dismissAnnouncement(); });
+announcement.addEventListener('click', event => {
+  if (event.target === announcement) dismissAnnouncement();
+});
+// Keep the Figma composition proportional within the desktop content width.
+new ResizeObserver(([entry]) => {
+  bannerSection.style.setProperty('--wrapped-web-scale', entry.contentRect.width / 1200);
+  bannerSection.style.setProperty('--wrapped-mobile-scale', entry.contentRect.width / 328);
+}).observe(bannerSection.querySelector('.wrapped-banner'));
 
 const viewer = document.createElement('dialog');
 viewer.className = 'wrapped-viewer';
@@ -30,6 +138,48 @@ let recapTimers = [];
 let toastTimer;
 const safeRead = key => { try { return sessionStorage.getItem(key); } catch { return null; } };
 const safeWrite = (key, value) => { try { sessionStorage.setItem(key, String(value)); } catch {} };
+
+const webBanner = banner.querySelector('.wrapped-web');
+const mobileBanner = banner.querySelector('.wrapped-mobile');
+const desktopBanner = window.matchMedia('(min-width: 801px)');
+let webBannerReady = false;
+const enteredBanners = new WeakSet();
+let webBannerInView = false;
+let webBannerBlockedByIntro = false;
+
+function startWebBannerEntrance() {
+  const activeBanner = desktopBanner.matches ? webBanner : mobileBanner;
+  if (!webBannerReady || enteredBanners.has(activeBanner) || !webBannerInView || webBannerBlockedByIntro || viewer.open || document.hidden) return;
+  enteredBanners.add(activeBanner);
+  activeBanner.dataset.entry = reducedMotion.matches ? 'done' : 'playing';
+}
+
+// Each page load gets one entrance, deferred until the announcement is visible.
+webBanner.dataset.entry = reducedMotion.matches ? 'done' : 'waiting';
+mobileBanner.dataset.entry = reducedMotion.matches ? 'done' : 'waiting';
+const webBannerObserver = new IntersectionObserver(([entry]) => {
+  webBannerInView = entry.isIntersecting && entry.intersectionRatio >= .25;
+  startWebBannerEntrance();
+}, { threshold: [0, .25] });
+webBannerObserver.observe(banner);
+Promise.allSettled([
+  document.fonts.ready,
+  ...[...banner.querySelectorAll('img')].map(image => image.decode())
+]).then(() => { webBannerReady = true; startWebBannerEntrance(); });
+desktopBanner.addEventListener('change', startWebBannerEntrance);
+document.addEventListener('visibilitychange', startWebBannerEntrance);
+webBanner.addEventListener('animationend', event => {
+  if (event.animationName === 'wrapped-web-atmosphere') webBanner.dataset.entry = 'done';
+});
+mobileBanner.addEventListener('animationend', event => {
+  if (event.animationName === 'wrapped-web-atmosphere') mobileBanner.dataset.entry = 'done';
+});
+reducedMotion.addEventListener('change', () => {
+  if (reducedMotion.matches) {
+    webBanner.dataset.entry = 'done';
+    mobileBanner.dataset.entry = 'done';
+  }
+});
 
 function resizeCanvas() {
   const width = frame.clientWidth;
@@ -66,11 +216,6 @@ function updateChrome() {
   if (current === stories.length - 1) safeWrite('olimpo-wrapped-completed', true);
 }
 
-function updateBanner() {
-  const last = Number(safeRead('olimpo-wrapped-last-story') || 0);
-  banner.querySelector('.wrapped-banner-cta').textContent = safeRead('olimpo-wrapped-completed') === 'true' ? 'Volver a ver mi Wrapped' : last > 0 ? 'Continuar mi Wrapped' : 'Ver mi Wrapped';
-}
-
 function introAnimation() {
   const page = canvas.firstElementChild;
   if (reducedMotion.matches) { page.dataset.intro = 'done'; return; }
@@ -91,7 +236,11 @@ function introAnimation() {
 }
 
 async function showViewer(index = 0) {
-  if (viewer.open) return;
+  if (viewer.open || announcementClosing) return;
+  dismissAnnouncement(false, false);
+  floatingUnlocked = true;
+  floatingWrapped.getAnimations().forEach(animation => animation.cancel());
+  floatingWrapped.hidden = true;
   current = Math.max(0, Math.min(stories.length - 1, index));
   previousFocus = document.activeElement;
   canvas.innerHTML = storyMarkup(current);
@@ -123,10 +272,12 @@ async function closeViewer() {
     fade.cancel();
   }
   viewer.close();
+  webBannerBlockedByIntro = false;
+  startWebBannerEntrance();
   delete viewer.dataset.closing;
   document.body.style.overflow = '';
-  updateBanner();
-  (previousFocus?.isConnected && previousFocus !== document.body ? previousFocus : banner).focus({ preventScroll: true });
+  revealFloatingWrapped();
+  (previousFocus?.isConnected && previousFocus !== document.body && previousFocus.getClientRects().length ? previousFocus : floatingWrapped).focus({ preventScroll: true });
 }
 
 async function goTo(index) {
@@ -191,10 +342,12 @@ function playRecap() {
   recapTimers.push(setTimeout(() => { player.classList.remove('is-playing'); title.innerHTML = 'Tu año,<br>en un vistazo.'; }, steps.length * duration));
 }
 
-banner.addEventListener('click', () => {
+function openSavedWrapped() {
   const index = safeRead('olimpo-wrapped-completed') === 'true' ? 0 : Number(safeRead('olimpo-wrapped-last-story') || 0);
   showViewer(index);
-});
+}
+banner.addEventListener('click', openSavedWrapped);
+floatingWrapped.addEventListener('click', openSavedWrapped);
 viewer.addEventListener('cancel', event => { event.preventDefault(); closeViewer(); });
 viewer.addEventListener('click', event => {
   if (Date.now() < suppressClickUntil) return;
@@ -227,7 +380,8 @@ frame.addEventListener('pointerup', event => {
   }
 });
 frame.addEventListener('pointercancel', () => { pointerStart = null; });
-updateBanner();
 const query = new URLSearchParams(location.search);
-if (query.has('story')) setTimeout(() => showViewer(Number(query.get('story')) - 1), 200);
-else if (query.get('intro') === '1' || (!safeRead('olimpo-wrapped-announced') && query.get('intro') !== '0')) setTimeout(() => showViewer(0), 1200);
+if (query.has('story')) {
+  webBannerBlockedByIntro = true;
+  setTimeout(() => showViewer(Number(query.get('story')) - 1), 200);
+} else showAnnouncement();
