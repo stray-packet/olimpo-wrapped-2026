@@ -2,7 +2,7 @@
 
 Prototipo local: **http://127.0.0.1:4173/**.
 
-[Handoff en Figma: acceso, 10 historias web, 10 mobile y recursos](https://www.figma.com/design/8wpuE9yWVC1SnC8ENdlWE7/-MARKETING--Wrapped-Olimpo?node-id=10955-39).
+[Handoff en Figma: acceso, 10 historias web, 10 mobile y recursos](https://www.figma.com/design/8wpuE9yWVC1SnC8ENdlWE7/-MARKETING--Wrapped-Olimpo?node-id=10962-1775).
 
 La home con el banner está en `/`; la copia anterior de la home está en `/reference/olimpo-home/`.
 
