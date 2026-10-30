@@ -1,0 +1,58 @@
+/* Cuenta: réplica de la vista de perfil de olimpo-interactive-walktrough,
+   aislada de sus recorridos y animaciones de Descubre Olimpo. */
+.profile-drawer{width:400px}
+#drawerContent{height:100%;min-height:0}
+.profile-drawer .account-view{height:100%;overflow:auto;background:#f6f8f7;color:#19572c;padding-bottom:24px;scrollbar-width:thin;scrollbar-color:#9ee86e55 transparent}
+.profile-drawer .account-hero{height:188px;position:relative;background:#00582f;padding:18px 20px}
+.profile-drawer .account-close{position:absolute;top:12px;left:14px;display:grid;place-items:center;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:#ffffff1c;color:#fff;font:30px/1 Arial,sans-serif;cursor:pointer}
+.profile-drawer .account-balance-card{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1.2fr;gap:12px;width:272px;min-height:180px;margin:-120px auto 0;padding:32px 20px 22px;border-radius:24px;background:url('../reference/olimpo-home/assets/remote/www.olimpo.bet/assets/img/userMenu/backgroundGreen.svg') center/cover no-repeat;color:#fff;overflow:hidden;box-shadow:0 8px 18px #073c2226}
+.profile-drawer .balance-main,.profile-drawer .balance-details{position:relative;z-index:1}
+.profile-drawer .balance-main{display:flex;flex-direction:column;align-items:flex-start}
+.profile-drawer .balance-main .profile-avatar{display:grid;place-items:center;width:51px;height:51px;margin-bottom:18px;border-radius:50%;background:#fff;color:#1c1c1c;font:700 24px/1 Olimpo,Arial,sans-serif}
+.profile-drawer .balance-main strong{font-size:20px;line-height:1.1}
+.profile-drawer .balance-main small{font-size:16px;line-height:1.2;margin-top:5px}
+.profile-drawer .balance-libra{position:absolute;width:25px;height:25px;left:79px;bottom:0}
+.profile-drawer .balance-details p{display:grid;margin:0;padding:0 0 7px;border-bottom:1px solid #ffffff80;line-height:1.1}
+.profile-drawer .balance-details p+p{padding-top:8px}
+.profile-drawer .balance-details strong{font-size:16px}
+.profile-drawer .balance-details span{font-size:14px}
+.profile-drawer .account-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:37px 20px 18px}
+.profile-drawer .account-quick button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:108px;border:0;border-radius:22px;background:#fff;color:#19572c;font:500 16px/1 Olimpo,Arial,sans-serif;box-shadow:0 4px 12px #174e2b0c;cursor:pointer}
+.profile-drawer .account-quick b{font-weight:500}
+.profile-drawer .account-quick em{position:absolute;top:15px;right:18px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#ff3747;color:#fff;font:700 12px/1 Olimpo,Arial,sans-serif}
+.profile-drawer .account-menu-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border-radius:50%;background:#f5f7f4;color:#3eb969}
+.profile-drawer .account-menu-icon img{width:30px;height:30px;object-fit:contain}
+.profile-drawer .account-quick .account-menu-icon img{width:48px;height:48px}
+.profile-drawer .account-menu-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.profile-drawer .account-menu{display:grid;gap:8px;padding:0 20px}
+.profile-drawer .account-menu-row{display:grid;grid-template-columns:43px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:58px;padding:8px 16px;border:0;border-radius:14px;background:#fff;color:#19572c;font:500 16px/20px Olimpo,Arial,sans-serif;text-align:left;box-shadow:0 3px 10px #174e2b0b;cursor:pointer}
+.profile-drawer .account-menu-row:hover{background:#effdf4}
+.profile-drawer .account-menu-row>b{color:#3cc666;font:400 26px/1 Arial,sans-serif}
+.profile-drawer .wrapped-panel-row{position:relative;isolation:isolate;overflow:hidden;background:#010101;color:#fff}
+.profile-drawer .wrapped-panel-row:hover{background:#010101}
+.profile-drawer .wrapped-panel-row::after{content:"";position:absolute;z-index:3;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(90deg,#ffcc00,#2cff4a);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;pointer-events:none}
+.profile-drawer .wrapped-panel-row:hover::after,.profile-drawer .wrapped-panel-row:focus-visible::after{opacity:1}
+.profile-drawer .wrapped-panel-row:focus-visible{outline:none}
+.profile-drawer .wrapped-panel-flags{position:absolute;z-index:0;display:block;overflow:hidden;pointer-events:none}
+.profile-drawer .wrapped-panel-flags img{position:absolute;display:block;max-width:none}
+.profile-drawer .wrapped-panel-flags::after{content:"";position:absolute;inset:0}
+.profile-drawer .wrapped-panel-flags-right{top:0;right:0;width:210px;height:88px}
+.profile-drawer .wrapped-panel-flags-right img{top:0;left:-70.42%;width:170.49%;height:229.28%}
+.profile-drawer .wrapped-panel-flags-right::after{background:linear-gradient(-79.89deg,#000 4.94%,transparent 52.88%,#000 101.2%)}
+.profile-drawer .wrapped-panel-icon{position:relative;z-index:1;overflow:visible;background:transparent}
+.profile-drawer .wrapped-panel-icon img{display:block;width:26px;height:34px;object-fit:contain;filter:drop-shadow(0 0 5px #ffcc0055)}
+.profile-drawer .wrapped-panel-label{position:relative;z-index:1;min-width:0;color:#fff;white-space:nowrap;font:500 16px/20px Olimpo,Arial,sans-serif}
+.profile-drawer .wrapped-panel-label span{color:#13ff34}
+.profile-drawer .wrapped-panel-row>b{position:relative;z-index:1;color:#3cc666}
+.profile-drawer .other-options{padding:20px}
+.profile-drawer .other-options h3{margin:0 0 11px;color:#19572c;font-size:17px}
+.profile-drawer .other-options button{display:flex;align-items:center;gap:12px;padding:8px 0;border:0;background:none;color:#b71f1f;font:500 16px/1 Olimpo,Arial,sans-serif;cursor:pointer}
+.profile-drawer .other-options .account-menu-icon{background:transparent;color:#b71f1f}
+body.has-open-drawer{overflow:hidden}
+body.has-open-drawer .wrapped-floating{visibility:hidden}
+@media(max-width:768px){
+  .profile-drawer{width:min(400px,calc(100% - 12px))}
+  .profile-drawer .account-hero{height:180px}
+  .profile-drawer .account-menu{padding:0 16px}
+  .profile-drawer .account-quick{padding-left:16px;padding-right:16px}
+}

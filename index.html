@@ -7,6 +7,7 @@
     <title>Olimpo Wrapped 2026</title>
     <link rel="icon" type="image/svg+xml" href="reference/olimpo-home/assets/remote/www.olimpo.bet/static/img/logo_olimpo.svg" />
     <link rel="stylesheet" href="reference/olimpo-home/styles.css" />
+    <link rel="stylesheet" href="app/profile-panel.css" />
       <link rel="stylesheet" href="app/wrapped.css" />
   </head>
   <body>
@@ -168,23 +169,35 @@
 <div class="scrim" id="drawerScrim" hidden></div>
     <aside class="profile-drawer" id="profileDrawer" aria-label="Menú de perfil" aria-modal="true" role="dialog" aria-hidden="true">
       <div id="drawerContent">
-        <div class="drawer-top">
-          <button class="drawer-close" id="closeDrawer" type="button" aria-label="Cerrar menú">×</button>
-          <div class="profile-summary"><span class="profile-avatar">E</span><div><strong>Elena</strong><small>Mi cuenta Olimpo</small></div></div>
-          <div class="drawer-balance"><span>Saldo disponible</span><strong>S/ 3.50</strong><button class="deposit compact" type="button">Deposita</button></div>
-        </div>
-        <nav class="profile-menu" aria-label="Opciones de cuenta">
-          <button class="profile-option is-selected" type="button"><span>◉</span> Mi perfil</button>
-          <button class="profile-option discover-entry" data-action="discover" type="button"><span class="discover-menu-icon"><img src="reference/olimpo-home/assets/icons/discovery-icon.webp" alt="" /></span><span>Descubre Olimpo</span><em>Nuevo</em></button>
-          <button class="profile-option" type="button"><span>◈</span> Mis bonos <em>2</em></button>
-          <button class="profile-option" type="button"><span>♛</span> Misiones</button>
-          <button class="profile-option" type="button"><span>◷</span> Historial de transacciones</button>
-          <button class="profile-option" type="button"><span>⚙</span> Configuración</button>
-        </nav>
-        <div class="drawer-bottom">
-          <button class="responsible" type="button">Juego responsable</button>
-          <button class="logout" type="button">Cerrar sesión</button>
-        </div>
+        <section class="account-view">
+          <header class="account-hero">
+            <button class="account-close" id="closeDrawer" type="button" aria-label="Cerrar menú">×</button>
+          </header>
+          <article class="account-balance-card">
+            <div class="balance-main"><span class="profile-avatar">E</span><strong>S/ 3.50</strong><small>Saldo</small><img class="balance-libra" src="reference/olimpo-home/assets/remote/www.olimpo.bet/static/img/userMenu/libra.svg" alt="" /></div>
+            <div class="balance-details"><p><strong>S/ 3.50</strong><span>Saldo Real</span></p><p><strong>S/ 0.00</strong><span>Bonos</span></p><p><strong>S/ 0.00</strong><span>Apuestas gratis</span></p></div>
+          </article>
+          <div class="account-quick">
+            <button type="button"><span class="account-menu-icon"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/assets/img/userMenu/mensajes.svg" alt="" /></span><b>Mensajes</b><em>6</em></button>
+            <button type="button"><span class="account-menu-icon"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/assets/img/userMenu/deposita_new.svg" alt="" /></span><b>Deposita</b></button>
+            <button type="button"><span class="account-menu-icon"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/assets/img/userMenu/retira_new.svg" alt="" /></span><b>Retira</b></button>
+          </div>
+          <nav class="account-menu" aria-label="Opciones de cuenta">
+            <button class="account-menu-row wrapped-panel-row" id="drawerWrappedEntry" type="button" aria-label="Abrir Olimpo Wrapped">
+              <span class="wrapped-panel-flags wrapped-panel-flags-right" aria-hidden="true"><img src="assets/wrapped/banner/checkered-flags.png" alt="" /></span>
+              <span class="account-menu-icon wrapped-panel-icon"><img src="assets/wrapped/banner/gold-lightning.png" alt="" /></span>
+              <span class="wrapped-panel-label">Olimpo <span>Wrapped</span></span><b>›</b>
+            </button>
+            <button class="account-menu-row" type="button"><span class="account-menu-icon"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/static/img/userMenu/misBonos.svg" alt="" /></span><span>Mis bonos</span><b>›</b></button>
+            <button class="account-menu-row" type="button"><span class="account-menu-icon"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/static/img/userMenu/misiones.svg" alt="" /></span><span>Misiones del Olimpo</span><b>›</b></button>
+            <button class="account-menu-row" type="button"><span class="account-menu-icon"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/static/img/userMenu/clubOlimpo.svg" alt="" /></span><span>Club Olimpo</span><b>›</b></button>
+            <button class="account-menu-row" type="button"><span class="account-menu-icon"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/static/img/userMenu/miPerfil.svg" alt="" /></span><span>Mi perfil</span><b>›</b></button>
+            <button class="account-menu-row" type="button"><span class="account-menu-icon"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/static/img/userMenu/miHistorial.svg" alt="" /></span><span>Historial</span><b>›</b></button>
+            <button class="account-menu-row" type="button"><span class="account-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M9.5 9a2.7 2.7 0 1 1 4.1 2.3c-1 .6-1.6 1.1-1.6 2.2M12 16.8h.01"/></svg></span><span>Centro de ayuda</span><b>›</b></button>
+            <button class="account-menu-row" type="button"><span class="account-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v16M18 4v16M3 8h6M15 15h6"/><circle cx="9" cy="8" r="2"/><circle cx="15" cy="15" r="2"/></svg></span><span>Control</span><b>›</b></button>
+          </nav>
+          <section class="other-options"><h3>Otras opciones</h3><button type="button"><span class="account-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4M8 12h10"/></svg></span>Cerrar sesión</button></section>
+        </section>
       </div>
     </aside>
 <nav class="mobile-nav" aria-label="Navegación móvil">

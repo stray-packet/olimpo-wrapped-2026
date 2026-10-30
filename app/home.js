@@ -43,6 +43,7 @@ const closeButton = document.querySelector('#closeDrawer');
 
 function openProfileDrawer() {
   drawer.classList.add('is-open');
+  document.dispatchEvent(new Event('olimpo-wrapped:drawer-open'));
   document.body.classList.add('has-open-drawer');
   drawer.setAttribute('aria-hidden', 'false');
   profileTrigger.setAttribute('aria-expanded', 'true');
@@ -62,8 +63,11 @@ function closeProfileDrawer() {
 profileTrigger.addEventListener('click', openProfileDrawer);
 closeButton.addEventListener('click', closeProfileDrawer);
 scrim.addEventListener('click', closeProfileDrawer);
+document.querySelector('#drawerWrappedEntry').addEventListener('click', () => {
+  document.dispatchEvent(new Event('olimpo-wrapped:open'));
+});
 document.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && drawer.classList.contains('is-open')) closeProfileDrawer();
+  if (event.key === 'Escape' && drawer.classList.contains('is-open') && !document.querySelector('.wrapped-viewer[open]')) closeProfileDrawer();
 });
 
 document.querySelector('.brand').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));

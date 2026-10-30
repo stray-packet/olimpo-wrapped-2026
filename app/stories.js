@@ -55,12 +55,12 @@ export const stories = [
   {
     id: '10763:11490', title: 'Tu año en un vistazo', category: 'Un último recuerdo', background: a(9, 'imgBackgroundImage'),
     summary: 'Tu 2026 en un vistazo: 800 bonos, nivel Dios y 18 canjes.',
-    render: () => `${bg(a(9, 'imgBackgroundImage'))}<button class="recap-play" data-play-recap aria-label="Reproducir tu año en un vistazo">${img(coverArt, 'recap-cover')}<span class="recap-kicker">OLIMPO WRAPPED</span><span class="recap-title">Tu año,<br>en un vistazo.</span><span class="recap-play-icon">${img(a(9, 'imgPlay', 'svg'))}</span><span class="recap-play-label">Reproducir resumen</span><span class="recap-progress"></span></button>`
+    render: () => `${bg(a(9, 'imgBackgroundImage'))}<div class="recap-card" aria-label="Portada del resumen">${img(coverArt, 'recap-cover')}<span class="recap-play-icon" aria-hidden="true">${img(a(9, 'imgPlay', 'svg'))}</span><span class="recap-play-label">Reproducir resumen</span></div>`
   },
   {
     id: '10763:11446', title: 'Tu historia continúa', category: 'Hasta el próximo año', background: a(10, 'imgBackgroundImage'),
     summary: 'Lo mejor todavía está por venir. Nos vemos el próximo año.',
-    render: () => `${bg(a(10, 'imgBackgroundImage'))}<div class="closing-top"><p>Lo mejor todavía</p><b>ESTÁ POR VENIR</b></div><div class="closing-bottom"><b>NOS VEMOS EL</b><b>PRÓXIMO AÑO</b><p>¡Sigamos<br>jugando como<br>los dioses!</p></div><button class="finish-wrapped" data-close-wrapped>Volver a Olimpo</button>`
+    render: () => `${bg(a(10, 'imgBackgroundImage'))}<div class="closing-top"><p>Lo mejor todavía</p><b>ESTÁ POR VENIR</b></div><div class="closing-bottom"><b>NOS VEMOS EL</b><b>PRÓXIMO AÑO</b><p>¡Sigamos<br>jugando como<br>los dioses!</p></div>`
   }
 ];
 

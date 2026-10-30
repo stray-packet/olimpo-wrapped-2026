@@ -1,4 +1,4 @@
-import { stories, storyMarkup, coverArt, logo } from './stories.js';
+import { stories, storyMarkup } from './stories.js';
 import { prepareStoryMotion, animateStoryMotion, stopStoryMotion } from './story-motion.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -39,16 +39,25 @@ floatingWrapped.type = 'button';
 floatingWrapped.hidden = true;
 floatingWrapped.setAttribute('aria-label', 'Abrir mi Olimpo Wrapped');
 floatingWrapped.setAttribute('title', 'Tu Olimpo Wrapped');
-floatingWrapped.innerHTML = `<span class="wrapped-floating-face" aria-hidden="true"><img src="assets/wrapped/banner/gold-lightning.png" alt=""><span class="wrapped-floating-o">O</span><span class="wrapped-floating-w">W</span></span>`;
+floatingWrapped.innerHTML = `<span class="wrapped-floating-art wrapped-floating-art-web" aria-hidden="true" data-node-id="10916:1670">
+  <img class="wrapped-floating-ring" src="assets/wrapped/floating/web-ring.svg" alt="">
+  <svg class="wrapped-floating-label" width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><defs><path id="wrapped-label-web" d="M 4 47 A 44 44 0 0 1 92 47"/></defs><text><textPath href="#wrapped-label-web" startOffset="50%" text-anchor="middle">WRAPPED</textPath></text></svg>
+  <span class="wrapped-floating-face"><span class="wrapped-floating-flags"><img src="assets/wrapped/banner/checkered-flags.png" alt=""></span><span class="wrapped-floating-lightning"><img src="assets/wrapped/banner/gold-lightning.png" alt=""></span></span>
+</span><span class="wrapped-floating-art wrapped-floating-art-mobile" aria-hidden="true" data-node-id="10916:1669">
+  <img class="wrapped-floating-ring" src="assets/wrapped/floating/mobile-ring.svg" alt="">
+  <svg class="wrapped-floating-label" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><defs><path id="wrapped-label-mobile" d="M 2 23.5 A 22 22 0 0 1 46 23.5"/></defs><text><textPath href="#wrapped-label-mobile" startOffset="50%" text-anchor="middle">WRAPPED</textPath></text></svg>
+  <span class="wrapped-floating-face"><span class="wrapped-floating-flags"><img src="assets/wrapped/banner/checkered-flags.png" alt=""></span><span class="wrapped-floating-lightning"><img src="assets/wrapped/banner/gold-lightning.png" alt=""></span></span>
+</span>`;
 document.body.append(floatingWrapped);
 let announcementTimer;
 let announcementPreviousFocus;
 let announcementBodyOverflow = '';
 let announcementClosing = false;
 let floatingUnlocked = false;
+let floatingRetired = false;
 
 function revealFloatingWrapped(animate = true) {
-  if (!floatingUnlocked) return;
+  if (!floatingUnlocked || floatingRetired) return;
   floatingWrapped.hidden = false;
   if (animate && !reducedMotion.matches) floatingWrapped.animate([
     { opacity: 0, transform: 'scale(.6)' },
@@ -56,6 +65,14 @@ function revealFloatingWrapped(animate = true) {
     { opacity: 1, transform: 'scale(1)' }
   ], { duration: 480, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
 }
+
+function retireFloatingWrapped() {
+  floatingRetired = true;
+  floatingWrapped.getAnimations().forEach(animation => animation.cancel());
+  floatingWrapped.hidden = true;
+}
+
+document.addEventListener('olimpo-wrapped:drawer-open', retireFloatingWrapped);
 
 function showAnnouncement() {
   if (announcement.open) return;
@@ -119,7 +136,7 @@ new ResizeObserver(([entry]) => {
 const viewer = document.createElement('dialog');
 viewer.className = 'wrapped-viewer';
 viewer.setAttribute('aria-label', 'Olimpo Wrapped 2026');
-viewer.innerHTML = `<img class="viewer-ambient" src="${coverArt}" alt=""><div class="viewer-shell"><div class="viewer-brand"><img src="reference/olimpo-home/assets/remote/www.olimpo.bet/static/img/logo_olimpo.svg" alt="">OLIMPO WRAPPED 2026</div><aside class="viewer-sidebar"><p class="viewer-eyebrow"></p><h1 class="viewer-title"></h1><p class="viewer-description"></p><div class="viewer-count"><b>01</b><span>/ 10 historias</span></div><div class="viewer-buttons"><button data-prev-story>Anterior</button><button data-next-story>Siguiente</button></div><small class="viewer-hint">Usa las flechas del teclado para avanzar.<br>Puedes cerrar y volver cuando quieras.</small><button class="viewer-restart" data-restart-wrapped>Volver al comienzo</button><button class="viewer-return" data-close-wrapped>Volver a Olimpo</button></aside><div class="story-frame"><div class="story-canvas"></div></div><aside class="viewer-next"><span>A continuación</span><button class="next-preview" data-next-story><img alt=""><b></b></button><p>Cada historia es parte de tu año.</p></aside></div><div class="wrap-toast" role="status" aria-live="polite"></div>`;
+viewer.innerHTML = `<div class="viewer-shell"><aside class="viewer-prev"><span>Anterior</span><button class="prev-preview" data-prev-story aria-label="Ver la historia anterior"><img alt=""><b></b></button></aside><div class="story-frame"><div class="story-canvas"></div></div><aside class="viewer-next"><span>Siguiente</span><button class="next-preview" data-next-story aria-label="Ver la siguiente historia"><img alt=""><b></b></button></aside></div><div class="wrap-toast" role="status" aria-live="polite"></div>`;
 document.body.append(viewer);
 
 // Text lighting follows the inner-shadow layers of Figma's editable number component.
@@ -134,10 +151,24 @@ let switching = false;
 let previousFocus;
 let pointerStart;
 let suppressClickUntil = 0;
-let recapTimers = [];
 let toastTimer;
 const safeRead = key => { try { return sessionStorage.getItem(key); } catch { return null; } };
 const safeWrite = (key, value) => { try { sessionStorage.setItem(key, String(value)); } catch {} };
+const storyAssetLoads = new Map();
+const clampStoryIndex = value => Number.isFinite(Number(value)) ? Math.max(0, Math.min(stories.length - 1, Math.trunc(Number(value)))) : 0;
+
+function preloadStoryAssets(index) {
+  if (!Number.isInteger(index) || index < 0 || index >= stories.length) return Promise.resolve();
+  if (!storyAssetLoads.has(index)) {
+    const sources = [...new Set([...storyMarkup(index).matchAll(/<img\b[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]))];
+    storyAssetLoads.set(index, Promise.allSettled(sources.map(src => {
+      const image = new Image();
+      image.src = src;
+      return image.decode();
+    })));
+  }
+  return storyAssetLoads.get(index);
+}
 
 const webBanner = banner.querySelector('.wrapped-web');
 const mobileBanner = banner.querySelector('.wrapped-mobile');
@@ -188,30 +219,22 @@ function resizeCanvas() {
 }
 new ResizeObserver(resizeCanvas).observe(frame);
 
-function stopRecap() {
-  recapTimers.forEach(clearTimeout);
-  recapTimers = [];
-}
-
 function updateChrome() {
-  const story = stories[current];
   viewer.dataset.story = current + 1;
-  viewer.querySelector('.viewer-eyebrow').textContent = story.category;
-  viewer.querySelector('.viewer-title').innerHTML = current === 0 ? 'Todo un año.<br><span>Una historia tuya.</span>' : story.title;
-  viewer.querySelector('.viewer-description').textContent = current === 0 ? 'Tu Olimpo Wrapped 2026 ya está aquí. Descubre los momentos que marcaron tu año.' : 'Recorre tu año a tu ritmo. Tu historia sigue en cada pantalla.';
-  viewer.querySelector('.viewer-count b').textContent = String(current + 1).padStart(2, '0');
-  viewer.querySelector('.viewer-buttons [data-prev-story]').disabled = current === 0;
-  viewer.querySelector('.viewer-buttons [data-next-story]').disabled = current === stories.length - 1;
-  viewer.querySelector('.viewer-restart').hidden = current === 0;
+  const previous = stories[current - 1];
+  viewer.querySelector('.viewer-prev').hidden = !previous;
+  if (previous) {
+    viewer.querySelector('.prev-preview img').src = previous.background;
+    viewer.querySelector('.prev-preview b').textContent = previous.title;
+  }
   const next = stories[current + 1];
   viewer.querySelector('.viewer-next').hidden = !next;
   if (next) {
     viewer.querySelector('.next-preview img').src = next.background;
     viewer.querySelector('.next-preview b').textContent = next.title;
-    const preload = new Image();
-    preload.src = next.background;
   }
-  viewer.querySelector('.viewer-ambient').src = story.background;
+  preloadStoryAssets(current + 1);
+  preloadStoryAssets(current - 1);
   safeWrite('olimpo-wrapped-last-story', current);
   if (current === stories.length - 1) safeWrite('olimpo-wrapped-completed', true);
 }
@@ -221,14 +244,14 @@ function introAnimation() {
   if (reducedMotion.matches) { page.dataset.intro = 'done'; return; }
   page.dataset.intro = 'playing';
   const reveal = page.querySelector('.cover-art')?.animate([
-    { transform: 'scale(1.45) rotate(-5deg)', opacity: 0, filter: 'brightness(1.8)' },
-    { offset: .35, opacity: 1, filter: 'brightness(1.3)' },
-    { transform: 'scale(1) rotate(0)', opacity: 1, filter: 'brightness(1)' }
+    { transform: 'scale(1.25) rotate(-3deg)', opacity: 0 },
+    { offset: .35, opacity: 1 },
+    { transform: 'scale(1) rotate(0)', opacity: 1 }
   ], { duration: 2100, easing: 'cubic-bezier(.2,.75,.2,1)', fill: 'backwards' });
   reveal?.finished.then(() => { page.dataset.intro = 'done'; }, () => {});
   page.querySelectorAll('.intro-copy').forEach((copy, index) => copy.animate([
-    { opacity: 0, transform: 'translateY(26px)', filter: 'blur(5px)' },
-    { opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }
+    { opacity: 0, transform: 'translateY(26px)' },
+    { opacity: 1, transform: 'translateY(0)' }
   ], { duration: 800, delay: 400 + index * 180, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
   page.querySelector('.wrap-story-action').animate([
     { opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'translateY(0)' }
@@ -239,9 +262,8 @@ async function showViewer(index = 0) {
   if (viewer.open || announcementClosing) return;
   dismissAnnouncement(false, false);
   floatingUnlocked = true;
-  floatingWrapped.getAnimations().forEach(animation => animation.cancel());
-  floatingWrapped.hidden = true;
-  current = Math.max(0, Math.min(stories.length - 1, index));
+  retireFloatingWrapped();
+  current = clampStoryIndex(index);
   previousFocus = document.activeElement;
   canvas.innerHTML = storyMarkup(current);
   prepareStoryMotion(canvas.firstElementChild, current);
@@ -253,40 +275,40 @@ async function showViewer(index = 0) {
   if (!reducedMotion.matches) {
     viewer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 350, fill: 'backwards' });
     frame.animate([{ opacity: 0, transform: 'translateY(45px) scale(.91)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 950, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
-    viewer.querySelector('.viewer-sidebar').animate([{ opacity: 0, transform: 'translateX(-25px)' }, { opacity: 1, transform: 'translateX(0)' }], { duration: 950, delay: 250, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
   }
   if (current === 0) introAnimation();
   else animateStoryMotion(canvas.firstElementChild, reducedMotion.matches);
   canvas.firstElementChild.focus({ preventScroll: true });
 }
 
+document.addEventListener('olimpo-wrapped:open', openSavedWrapped);
+
 async function closeViewer() {
   if (!viewer.open || viewer.dataset.closing) return;
   viewer.dataset.closing = 'true';
-  stopRecap();
-  stopStoryMotion(canvas.firstElementChild);
   if (!reducedMotion.matches) {
     const fade = viewer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: 'ease-in', fill: 'forwards' });
     frame.animate([{ transform: 'scale(1)' }, { transform: 'translateY(22px) scale(.96)' }], { duration: 320, easing: 'ease-in' });
     await fade.finished;
     fade.cancel();
   }
+  stopStoryMotion(canvas.firstElementChild);
   viewer.close();
   webBannerBlockedByIntro = false;
   startWebBannerEntrance();
   delete viewer.dataset.closing;
   document.body.style.overflow = '';
-  revealFloatingWrapped();
-  (previousFocus?.isConnected && previousFocus !== document.body && previousFocus.getClientRects().length ? previousFocus : floatingWrapped).focus({ preventScroll: true });
+  const focusTarget = previousFocus?.isConnected && previousFocus !== document.body && previousFocus.getClientRects().length
+    ? previousFocus : document.querySelector('#profileTrigger') ?? banner;
+  focusTarget.focus({ preventScroll: true });
 }
 
 async function goTo(index) {
   if (switching || index < 0 || index >= stories.length || index === current) return;
   switching = true;
-  stopRecap();
+  await preloadStoryAssets(index);
   const direction = index > current ? 1 : -1;
   const old = canvas.firstElementChild;
-  stopStoryMotion(old);
   const restoreFocus = old.contains(document.activeElement);
   old.setAttribute('aria-hidden', 'true');
   old.inert = true;
@@ -300,6 +322,7 @@ async function goTo(index) {
   const out = old.animate([{ opacity: 1, transform: 'translateX(0)' }, { opacity: 0, transform: `translateX(${-direction * 45}px)` }], { duration, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
   const enter = next.animate([{ opacity: 0, transform: `translateX(${direction * 60}px)` }, { opacity: 1, transform: 'translateX(0)' }], { duration, easing: 'cubic-bezier(.22,1,.36,1)' });
   await Promise.allSettled([out.finished, enter.finished]);
+  stopStoryMotion(old);
   old.remove();
   if (restoreFocus) next.focus({ preventScroll: true });
   switching = false;
@@ -325,25 +348,8 @@ async function shareStory() {
   }
 }
 
-function playRecap() {
-  const player = canvas.querySelector('[data-play-recap]');
-  if (!player || player.classList.contains('is-playing')) return;
-  stopRecap();
-  player.classList.add('is-playing');
-  const title = player.querySelector('.recap-title');
-  const steps = ['Esto fue<br>tu 2026.', '800<br>bonos.', 'Nivel<br>DIOS.', '18<br>canjes.', 'Tu historia<br>continúa.'];
-  const duration = reducedMotion.matches ? 1000 : 1500;
-  steps.forEach((text, index) => recapTimers.push(setTimeout(() => {
-    title.innerHTML = text;
-    if (!reducedMotion.matches) title.animate([{ opacity: 0, transform: 'translateY(18px) scale(.95)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 550, easing: 'cubic-bezier(.22,1,.36,1)' });
-  }, index * duration)));
-  player.querySelector('.recap-progress').animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: steps.length * duration, fill: 'forwards', easing: 'linear' });
-  if (!reducedMotion.matches) player.querySelector('.recap-cover').animate([{ transform: 'scale(1.25) rotate(-5deg)' }, { transform: 'scale(1.05) rotate(0)' }], { duration: steps.length * duration, easing: 'ease-out' });
-  recapTimers.push(setTimeout(() => { player.classList.remove('is-playing'); title.innerHTML = 'Tu año,<br>en un vistazo.'; }, steps.length * duration));
-}
-
 function openSavedWrapped() {
-  const index = safeRead('olimpo-wrapped-completed') === 'true' ? 0 : Number(safeRead('olimpo-wrapped-last-story') || 0);
+  const index = safeRead('olimpo-wrapped-completed') === 'true' ? 0 : clampStoryIndex(safeRead('olimpo-wrapped-last-story'));
   showViewer(index);
 }
 banner.addEventListener('click', openSavedWrapped);
@@ -357,16 +363,14 @@ viewer.addEventListener('click', event => {
   else if (target.hasAttribute('data-next-story')) goTo(current + 1);
   else if (target.hasAttribute('data-prev-story')) goTo(current - 1);
   else if (target.hasAttribute('data-story-index')) goTo(Number(target.dataset.storyIndex));
-  else if (target.hasAttribute('data-restart-wrapped')) goTo(0);
   else if (target.hasAttribute('data-share-story')) shareStory();
-  else if (target.hasAttribute('data-play-recap')) playRecap();
 });
 viewer.addEventListener('keydown', event => {
   if (event.key === 'ArrowRight') { event.preventDefault(); goTo(current + 1); }
   if (event.key === 'ArrowLeft') { event.preventDefault(); goTo(current - 1); }
 });
 frame.addEventListener('pointerdown', event => {
-  if (event.target.closest('.wrap-story-header,.wrap-story-action,.recap-play,.finish-wrapped')) return;
+  if (event.target.closest('.wrap-story-header,.wrap-story-action,.recap-card')) return;
   pointerStart = { x: event.clientX, y: event.clientY };
 });
 frame.addEventListener('pointerup', event => {
@@ -381,7 +385,10 @@ frame.addEventListener('pointerup', event => {
 });
 frame.addEventListener('pointercancel', () => { pointerStart = null; });
 const query = new URLSearchParams(location.search);
+const initialStory = query.has('story') ? clampStoryIndex(Number(query.get('story')) - 1) : safeRead('olimpo-wrapped-completed') === 'true' ? 0 : clampStoryIndex(safeRead('olimpo-wrapped-last-story'));
+preloadStoryAssets(initialStory);
+preloadStoryAssets(initialStory + 1);
 if (query.has('story')) {
   webBannerBlockedByIntro = true;
-  setTimeout(() => showViewer(Number(query.get('story')) - 1), 200);
+  preloadStoryAssets(initialStory).then(() => showViewer(initialStory));
 } else showAnnouncement();
